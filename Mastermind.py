@@ -10,28 +10,65 @@ print('Welcome to Mastermind. This is a game where your intuition and logic '
       ':( means one of your guesses is completely wrong.\n'
       'You will get 4 indicators for every guess. Try not to repeat numbers. Cheers!\n')
 
+wrongList = []
+correctList = []
+partially_correctList = []
+correct = 0
+wrong = 0
+partially_correct = 0
+codeList = ['']
+test_list = []
 code = str(random.randint(1000, 9999))
-i = 0
+number = code
 
+while len(number) != len(set(number)):
+    number = list(set(number))
+
+    n = 4 - len(number)
+    extra_digits = str(random.randrange(10 * (n - 1), 10 * n))
+    extra_digitsList = list(extra_digits)
+
+    for item in extra_digitsList:
+        number.append(item)
+    code = str(number)
+
+i = 0
 while i < 10:
     i += 1
-    user_guess = input('Enter your guess to crack the code: ')
-
-    if user_guess == code:
+    if test_list == codeList:
         print("CONGRATULATIONS. YOU CRACKED THE CODE TO BECOME THE MASTERMIND!")
         break
 
-    correctList = [1 if user_guess[j] == code[j] else 0 for j in range(4)]
-    partially_correctList = [1 if user_guess[j] in code and user_guess[j] != code[j] else 0 for j in range(4)]
+    user_guess = input('Enter your guess to crack the code: ')
+    user_guessList = list(user_guess)
+    test_list = list(user_guess)
 
-    correct_count = sum(correctList)
-    partially_correct_count = sum(partially_correctList)
-    wrong_count = 4 - correct_count - partially_correct_count
+    res = ''
+    for idx in range(len(test_list) - 1):
+        res = res + test_list[idx]
+    if len(test_list) > 0:
+        res = res + test_list[-1]
+    res = [res]
+    user_guess = list(res)
+    codeList = list(code)
 
-    feedback = ':) ' * correct_count + ':| ' * partially_correct_count + ':( ' * wrong_count
-    print(feedback, i)
+    for guess, codes in zip(user_guessList, codeList):
+        if guess not in code:
+            wrongList.append(guess)
 
-if i == 10:
-    print('GAME OVER!')
+    for guess, codes in zip(test_list, codeList):
+        if guess in code and test_list.index(guess) != codeList.index(guess):
+            partially_correctList.append(guess)
+
+        if guess in code and test_list.index(guess) == codeList.index(guess):
+            correctList.append(guess)
+
+    print(':) ' * len(correctList), ':| ' * len(partially_correctList), ':( ' * len(wrongList), i)
+    wrongList = []
+    correctList = []
+    partially_correctList = []
+    if i == 10 and test_list != codeList:
+        print('GAME OVER!')
 
 print('The correct secret code is ' + code)
+      
